@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -15,10 +16,15 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 	builder.WriteString("URL: " + request.URL.RequestURI() + "\n")
 
 	builder.WriteString("\nHeaders: \n")
-	for k, v := range request.Header {
+	headers := make([]string, 0, len(request.Header))
+	for k := range request.Header {
+		headers = append(headers, k)
+	}
+	sort.Strings(headers)
+	for _, k := range headers {
 		builder.WriteString(k)
 		builder.WriteString(":")
-		builder.WriteString(strings.Join(v, "|"))
+		builder.WriteString(strings.Join(request.Header[k], "|"))
 		builder.WriteString("\n")
 	}
 	builder.WriteString("\nParameters: \n")

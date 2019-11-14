@@ -1,0 +1,44 @@
+# ------------------- Capture HTTP Deployment ------------------- #
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    k8s-app: capture-http
+  name: capture-http
+  namespace: olp-here-master
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: capture-http
+  template:
+    metadata:
+      labels:
+        k8s-app: capture-http
+    spec:
+      containers:
+      - name: capture-http
+        image: silenceleaf529/capture-http:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        args:
+          - --port=8080
+---
+# ------------------- Capture HTTP Service ------------------- #
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: capture-http
+  name: capture-http
+  namespace: olp-here-master
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    k8s-app: capture-http
