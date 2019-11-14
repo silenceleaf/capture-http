@@ -1,6 +1,5 @@
 FROM golang:1.13.4-alpine3.10 as builder
 
-RUN mkdir /workspace
 ENV GOPATH /workspace
 ENV PATH "$PATH:/usr/local/go/bin:$GOPATH/bin"
 ENV CGO_ENABLED 0
