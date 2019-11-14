@@ -1,8 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -39,6 +41,7 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 }
 
 func main() {
+	port := flag.Int("port", 8080, "listening on")
 	http.HandleFunc("/", capture)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+strconv.Itoa(*port), nil)
 }
