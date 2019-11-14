@@ -42,6 +42,8 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 	port := flag.Int("port", 8080, "listening on")
+	flag.Parse()
+	fmt.Printf("Server listen on: " + strconv.Itoa(*port))
 	http.HandleFunc("/", capture)
 	http.ListenAndServe(":"+strconv.Itoa(*port), nil)
 }
