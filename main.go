@@ -36,8 +36,12 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 		builder.WriteString("\n")
 	}
 	builder.WriteString("\nCookies: \n")
-	for _, cookie := range request.Cookies() {
-		builder.WriteString(cookie.String())
+	cookies := make([]string, 0, len(request.Cookies()))
+	for _, c := range request.Cookies() {
+		cookies = append(cookies, c.String())
+	}
+	for _, cookie := range cookies {
+		builder.WriteString(cookie)
 		builder.WriteString("\n")
 	}
 	writer.Header().Add("Content-Type", "text/plain")
