@@ -15,6 +15,6 @@ RUN go build
 # ============================================
 
 FROM alpine:latest
-COPY --from=builder /workspace/src/org.junyan/capture/capture /usr/local/bin/capture
+COPY --from=builder /workspace/src/org.junyan/capture/capture /usr/local/bin/capture/capture
 WORKDIR /usr/local/bin/capture
 ENTRYPOINT ["/usr/local/bin/capture/capture", "--port=3000"]
