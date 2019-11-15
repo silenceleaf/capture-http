@@ -28,6 +28,17 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 	builder.WriteString("Host: " + request.Host + "\n")
 	builder.WriteString("URL: " + request.URL.RequestURI() + "\n")
 
+	// parameter
+	builder.WriteString("\nParameters: \n")
+	request.ParseForm()
+	for parameter, value := range request.Form {
+		builder.WriteString(parameter)
+		builder.WriteString(":")
+		builder.WriteString(strings.Join(value, "|"))
+		builder.WriteString("\n")
+	}
+
+	// header
 	builder.WriteString("\nHeaders: \n")
 	headers := make([]string, 0, len(request.Header))
 	for k := range request.Header {
@@ -40,22 +51,15 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 		builder.WriteString(strings.Join(request.Header[k], "|"))
 		builder.WriteString("\n")
 	}
-	builder.WriteString("\nParameters: \n")
-	request.ParseForm()
-	for parameter, value := range request.Form {
-		builder.WriteString(parameter)
-		builder.WriteString(":")
-		builder.WriteString(strings.Join(value, "|"))
-		builder.WriteString("\n")
-	}
-	builder.WriteString("\nCookies: \n")
+
+	// cookies
+	builder.WriteString("\nCookies(URL decoded): \n")
 	sort.Sort(sortCookie(request.Cookies()))
 	for _, cookie := range request.Cookies() {
 		builder.WriteString(cookie.Name)
 		builder.WriteString(":")
 		s, _ := url.QueryUnescape(cookie.Value)
 		builder.WriteString(s)
-		// builder.WriteString(fmt.Sprintf("%#v", cookie.Value))
 		builder.WriteString("\n")
 	}
 	writer.Header().Add("Content-Type", "text/plain")
