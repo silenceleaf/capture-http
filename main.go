@@ -4,10 +4,23 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
 )
+
+type sortCookie []*http.Cookie
+
+func (s sortCookie) Len() int {
+	return len(s)
+}
+func (s sortCookie) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s sortCookie) Less(i, j int) bool {
+	return s[i].Name < s[j].Name
+}
 
 func capture(writer http.ResponseWriter, request *http.Request) {
 	var builder strings.Builder
@@ -36,17 +49,18 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 		builder.WriteString("\n")
 	}
 	builder.WriteString("\nCookies: \n")
-	cookies := make([]string, 0, len(request.Cookies()))
-	for _, c := range request.Cookies() {
-		cookies = append(cookies, c.String())
-	}
-	for _, cookie := range cookies {
-		builder.WriteString(cookie)
+	sort.Sort(sortCookie(request.Cookies()))
+	for _, cookie := range request.Cookies() {
+		builder.WriteString(cookie.Name)
+		builder.WriteString(":")
+		s, _ := url.QueryUnescape(cookie.Value)
+		builder.WriteString(s)
+		// builder.WriteString(fmt.Sprintf("%#v", cookie.Value))
 		builder.WriteString("\n")
 	}
 	writer.Header().Add("Content-Type", "text/plain")
 	str := builder.String()
-	fmt.Fprintf(writer, str)
+	fmt.Fprint(writer, str)
 	fmt.Print(str)
 }
 
