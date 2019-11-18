@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"moul.io/http2curl"
 )
 
 type sortCookie []*http.Cookie
@@ -63,6 +65,12 @@ func capture(writer http.ResponseWriter, request *http.Request) {
 		builder.WriteString("\n")
 	}
 	writer.Header().Add("Content-Type", "text/plain")
+
+	builder.WriteString("\n\n")
+
+	command, _ := http2curl.GetCurlCommand(request)
+	builder.WriteString(command.String())
+
 	str := builder.String()
 	fmt.Fprint(writer, str)
 	fmt.Print(str)
